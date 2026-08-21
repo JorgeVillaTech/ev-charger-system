@@ -5,4 +5,4 @@ export const cargadores = [
     { id: 'C10', estado: 'disponible' },
 ]
 
-export const reservas = []  
+export const reservas = []   

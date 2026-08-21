@@ -7,4 +7,4 @@ export function calcularRangoReserva(hora, duracionMinutos) {
     const inicio = horaAMinutos(hora)
     const fin = inicio + duracionMinutos
     return { inicio, fin }
-}
+} 
