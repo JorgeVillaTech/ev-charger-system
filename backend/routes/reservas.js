@@ -1,19 +1,8 @@
 import express from 'express'
+import { cargadores, reservas } from '../data.js'
+import { calcularRangoReserva } from '../utils.js'
 
 const router = express.Router()
-
-const reservas = []
-
-function horaAMinutos(hora) {
-    const [horas, minutos] = hora.split(':').map(Number)
-    return horas * 60 + minutos
-}
-
-function calcularRangoReserva(hora, duracionMinutos) {
-    const inicio = horaAMinutos(hora)
-    const fin = inicio + duracionMinutos
-    return { inicio, fin }
-}
 
 router.get('/', (req, res) => {
     res.json(reservas)
@@ -30,6 +19,10 @@ if (duracionMinutos < 30 || duracionMinutos > 180) {
     return res.status(400).json({ error: 'La duración debe estar entre 30 y 180 minutos' })
 }
 
+if (!cargadores.some(cargador => cargador.id === cargadorId)) {
+    return res.status(400).json({ error: 'El cargador solicitado no existe.' })
+}
+
 const rangoHoraNuevaReserva = calcularRangoReserva(hora, duracionMinutos)
 
 const reservasMismoCargador = reservas.filter(reserva => reserva.cargadorId === cargadorId)
@@ -40,7 +33,7 @@ const haySobreposicion = reservasMismoCargador.some(reserva => {
 })
 
 if (haySobreposicion) {
-    return res.status(409).json({ error: 'El cargador ya está reservado en ese horario' })
+    return res.status(409).json({ error: 'El cargador ya está reservado en ese horario, revise la disponibilidad de los cargadores.' })
 }
 
 const nuevaReserva = {
@@ -68,4 +61,3 @@ router.delete('/:id', (req, res) => {
 })
 
 export default router
-export { reservas }
