@@ -1,5 +1,5 @@
 import express from 'express'
-import { cargadores, reservas } from '../data.js'
+import db from '../db.js'
 import { calcularRangoReserva } from '../utils.js'
 
 const router = express.Router()
@@ -9,9 +9,10 @@ router.get('/disponibles', (req, res) => {
     const minutosReserva = req.query.minutosReserva
 
     const horaConsultada = calcularRangoReserva(horaReserva, minutosReserva)
+    const cargadores = db.prepare('SELECT * FROM cargadores').all()
 
     const cargadoresDisponibles = cargadores.filter(cargador => {
-    const reservasDelCargador = reservas.filter(reserva => reserva.cargadorId === cargador.id)
+    const reservasDelCargador = db.prepare('SELECT * FROM reservas WHERE cargadorId = ?').all(cargador.id)
     const traslape = reservasDelCargador.some(reserva => {
         const rangoReservaExistente = calcularRangoReserva(reserva.hora, reserva.duracionMinutos)
         return rangoReservaExistente.inicio < horaConsultada.fin && horaConsultada.inicio < rangoReservaExistente.fin
@@ -23,12 +24,13 @@ router.get('/disponibles', (req, res) => {
 })
 
 router.get('/', (req, res) => {
+    const cargadores = db.prepare('SELECT * FROM cargadores').all()
     res.json(cargadores)
 })
 
 router.get('/:id', (req, res) => {
     const { id } = req.params
-    const cargador = cargadores.find(c => c.id === id)
+  const cargador = db.prepare('SELECT * FROM cargadores WHERE id = ?').get(id)
 
     if (!cargador) {
     return res.status(404).json({ error: 'Cargador no encontrado' })
