@@ -30,7 +30,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const { id } = req.params
-  const cargador = db.prepare('SELECT * FROM cargadores WHERE id = ?').get(id)
+    const cargador = db.prepare('SELECT * FROM cargadores WHERE id = ?').get(id)
 
     if (!cargador) {
     return res.status(404).json({ error: 'Cargador no encontrado' })

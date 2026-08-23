@@ -11,6 +11,10 @@ router.post('/registro', async (req, res) => {
         return res.status(400).json({ error: 'Faltan datos: nombre, email, password, edad, marcaVehiculo, modeloVehiculo y placaVehiculo son obligatorios' })
     }
 
+    if (edad < 18 || edad > 99){
+        return res.status(400).json({ error: 'El rango de edad para conducir no coincide con el valor ingresado'})
+    }
+
     // Validar que el email no esté ya registrado
     const usuarioExistente = db.prepare('SELECT * FROM usuarios WHERE email = ?').get(email)
 
@@ -55,4 +59,17 @@ router.post('/login', async (req, res) => {
     return res.status(200).json({ mensaje: 'Acceso concedido.'})
 })
 
+router.get('/:id', (req, res) => {
+
+    const {id} = req.params
+
+    const datosUsuario = db.prepare('SELECT nombre, email, edad, marcaVehiculo, modeloVehiculo, placaVehiculo FROM usuarios WHERE id = ?').get(id)
+
+    if(!datosUsuario){
+        return res.status(404).json({error: 'El id no coincide con ningún usuario registrtado'})
+    }
+
+    res.json({mensaje: 'Usuario encontrado', datosUsuario})
+
+})
 export default router

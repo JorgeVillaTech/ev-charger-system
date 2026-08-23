@@ -5,16 +5,23 @@ import './Register.css'
 function Register() {
     const [email, setUsuario] = useState('')
     const [contrasena, setContrasena] = useState('')
+    const [confirmarContrasena, setConfirmarContrasena] = useState('')
     const [nombreCompleto, setNombreCompleto] = useState('')
     const [edad, setEdad] = useState('')
     const [marcaVehiculo, setMarcaVehiculo] = useState('')
     const [modeloVehiculo, setModeloVehiculo] = useState('')
     const [placaVehiculo, setPlacaVehiculo] = useState('')
+    const [errorConfirmacion, setErrorConfirmacion] = useState('')
 
     function handleSubmit(event) {
         event.preventDefault()
+        if (contrasena !== confirmarContrasena){
+            setErrorConfirmacion('Las contraseñas ingresadas no coinciden')
+            return
+        }
         console.log('Email:', email)
         console.log('Contraseña:', contrasena)
+        console.log('Confirmación contraseña', confirmarContrasena)
         console.log('Nombre completo:', nombreCompleto)
         console.log('Edad:', edad)
         console.log('Marca del vehículo:', marcaVehiculo)
@@ -40,6 +47,13 @@ function Register() {
             value={contrasena}
             onChange={(e) => setContrasena(e.target.value)}
             />
+            <input
+            type="password"
+            placeholder="Confirmar contraseña"
+            value={confirmarContrasena}
+            onChange={(e) => setConfirmarContrasena(e.target.value)}
+            />
+            {errorConfirmacion && <p>{errorConfirmacion}</p>}
             <input
             type="text"
             placeholder="Nombre completo"

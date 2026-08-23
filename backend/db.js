@@ -4,8 +4,7 @@ const db = new Database('mycharger.db')
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS cargadores (
-    id TEXT PRIMARY KEY,
-    estado TEXT NOT NULL
+    id TEXT PRIMARY KEY
     )
 `)
 
@@ -35,17 +34,17 @@ db.exec(`
 `)
 
 const insertarCargador = db.prepare(`
-    INSERT OR IGNORE INTO cargadores (id, estado) VALUES (?, ?)
+    INSERT OR IGNORE INTO cargadores (id) VALUES (?)
 `)
 
 const cargadoresIniciales = [
-    { id: 'A1', estado: 'disponible' },
-    { id: 'A2', estado: 'disponible' },
-    { id: 'A3', estado: 'disponible' },
+    { id: 'A1' },
+    { id: 'A2' },
+    { id: 'A3' },
 ]
 
 cargadoresIniciales.forEach(cargador => {
-    insertarCargador.run(cargador.id, cargador.estado)
+    insertarCargador.run(cargador.id)
 })
 
 export default db

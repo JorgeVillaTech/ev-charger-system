@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom'
 import './Login.css'
 
 function Login() {
-    const [usuario, setUsuario] = useState('')
+    const [email, setEmail] = useState('')
     const [contrasena, setContrasena] = useState('')
 
     function handleSubmit(event) {
         event.preventDefault()
-        console.log('Usuario:', usuario)
+        console.log('Email:', email)
         console.log('Contraseña:', contrasena)
     }
 
@@ -20,9 +20,9 @@ function Login() {
         <form onSubmit={handleSubmit}>
             <input
             type="text"
-            placeholder="Usuario"
-            value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             />
             <input
             type="password"
