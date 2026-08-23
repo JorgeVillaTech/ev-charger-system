@@ -10,14 +10,20 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    const { cargadorId, hora, duracionMinutos } = req.body
+    const { cargadorId, hora, duracionMinutos, usuarioId } = req.body
 
-    if (!cargadorId || !hora || !duracionMinutos) {
-        return res.status(400).json({ error: 'Faltan datos: cargadorId, hora y duracionMinutos son obligatorios' })
+    if (!cargadorId || !hora || !duracionMinutos || !usuarioId) {
+        return res.status(400).json({ error: 'Faltan datos: cargadorId, hora, duracionMinutos y el ID del usuario son obligatorios' })
     }
 
     if (duracionMinutos < 30 || duracionMinutos > 180) {
         return res.status(400).json({ error: 'La duración debe estar entre 30 y 180 minutos' })
+    }
+
+    const usuarioConfirmado = db.prepare('SELECT * FROM usuarios WHERE id = ?').get(usuarioId)
+
+    if (!usuarioConfirmado){
+        return res.status(400).json({error : 'Usuario no encontrado'})
     }
 
     const cargador = db.prepare('SELECT * FROM cargadores WHERE id = ?').get(cargadorId)
@@ -39,13 +45,14 @@ router.post('/', (req, res) => {
         return res.status(409).json({ error: 'El cargador ya está reservado en ese horario, revise la disponibilidad de los cargadores.' })
     }
 
-    const resultado = db.prepare('INSERT INTO reservas (cargadorId, hora, duracionMinutos) VALUES (?, ?, ?)').run(cargadorId, hora, duracionMinutos)
+    const resultado = db.prepare('INSERT INTO reservas (cargadorId, hora, duracionMinutos, usuarioId) VALUES (?, ?, ?, ?)').run(cargadorId, hora, duracionMinutos, usuarioId)
 
     const nuevaReserva = {
     id: resultado.lastInsertRowid,
     cargadorId,
     hora,
     duracionMinutos,
+    usuarioId,
     }
 
     res.status(201).json({ mensaje: 'Reserva confirmada', reserva: nuevaReserva })

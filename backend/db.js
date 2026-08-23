@@ -12,10 +12,12 @@ db.exec(`
 db.exec(`
     CREATE TABLE IF NOT EXISTS reservas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuarioId INTEGER NOT NULL,
     cargadorId TEXT NOT NULL,
     hora TEXT NOT NULL,
     duracionMinutos INTEGER NOT NULL,
-    FOREIGN KEY (cargadorId) REFERENCES cargadores(id)
+    FOREIGN KEY (cargadorId) REFERENCES cargadores(id),
+    FOREIGN KEY (usuarioId) REFERENCES usuarios(id)
     )
 `)
 
