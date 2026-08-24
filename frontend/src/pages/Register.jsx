@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Register.css'
+import { useNavigate } from 'react-router-dom'
 
 function Register() {
     const [email, setUsuario] = useState('')
@@ -12,22 +13,40 @@ function Register() {
     const [modeloVehiculo, setModeloVehiculo] = useState('')
     const [placaVehiculo, setPlacaVehiculo] = useState('')
     const [errorConfirmacion, setErrorConfirmacion] = useState('')
+    const [errorRegistro, setErrorRegistro] = useState('')
+    const navigate = useNavigate()
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault()
-        if (contrasena !== confirmarContrasena){
-            setErrorConfirmacion('Las contraseñas ingresadas no coinciden')
-            return
-        }
-        console.log('Email:', email)
-        console.log('Contraseña:', contrasena)
-        console.log('Confirmación contraseña', confirmarContrasena)
-        console.log('Nombre completo:', nombreCompleto)
-        console.log('Edad:', edad)
-        console.log('Marca del vehículo:', marcaVehiculo)
-        console.log('Modelo del vehículo:', modeloVehiculo)
-        console.log('Placa del vehículo:', placaVehiculo)
+
+    if (contrasena !== confirmarContrasena) {
+        setErrorConfirmacion('Las contraseñas ingresadas no coinciden')
+        return
     }
+
+    const response = await fetch('http://localhost:3001/usuarios/registro', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        nombre: nombreCompleto,
+        email,
+        password: contrasena,
+        edad,
+        marcaVehiculo,
+        modeloVehiculo,
+        placaVehiculo,
+        }),
+    })
+
+    const datos = await response.json()
+    if (response.ok){
+        navigate('/login')
+    } else {
+        setErrorRegistro(datos.error)
+    }
+}
 
     return (
         <div className="register-container">
@@ -84,7 +103,7 @@ function Register() {
             value={placaVehiculo}
             onChange={(e) => setPlacaVehiculo(e.target.value)}
             />
-
+            {errorRegistro && <p>{errorRegistro}</p>}
             <button type="submit">Registrarme</button>
         </form>
 

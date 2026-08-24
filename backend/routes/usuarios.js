@@ -11,8 +11,18 @@ router.post('/registro', async (req, res) => {
         return res.status(400).json({ error: 'Faltan datos: nombre, email, password, edad, marcaVehiculo, modeloVehiculo y placaVehiculo son obligatorios' })
     }
 
+    if (nombre.length < 3){
+        return res.status(400).json({ error: 'El nombre debe contener mínimo 3 caracteres'})
+    }
+
+    // Validar edad para conducir
     if (edad < 18 || edad > 99){
         return res.status(400).json({ error: 'El rango de edad para conducir no coincide con el valor ingresado'})
+    }
+
+    // Validar que la placa sea de 6 caracteres
+    if (placaVehiculo.length !== 6){
+        return res.status(400).json({ error: 'Las placas deben contener 6 caracteres alfanuméricos exactamente'})
     }
 
     // Validar que el email no esté ya registrado
@@ -56,7 +66,16 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ error: 'Email o contraseña incorrectos, intente de nuevo.'})
     }
 
-    return res.status(200).json({ mensaje: 'Acceso concedido.'})
+    const usuarioLogeado = {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        marcaVehiculo: usuario.marcaVehiculo,
+        modeloVehiculo: usuario.modeloVehiculo,
+        placaVehiculo: usuario.placaVehiculo
+    }
+
+    return res.status(200).json({ mensaje: 'Acceso concedido.', usuario: usuarioLogeado})
 })
 
 router.get('/:id', (req, res) => {
