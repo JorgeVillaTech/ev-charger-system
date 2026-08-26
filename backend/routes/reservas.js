@@ -9,6 +9,12 @@ router.get('/', (req, res) => {
     res.json(reservas)
 })
 
+router.get('/usuario/:usuarioId', (req, res) => {
+    const { usuarioId } = req.params
+    const reservasDelUsuario = db.prepare('SELECT * FROM reservas WHERE usuarioId = ?').all(usuarioId)
+    res.json(reservasDelUsuario)
+})
+
 router.post('/', (req, res) => {
     const { cargadorId, hora, duracionMinutos, usuarioId } = req.body
 
