@@ -9,6 +9,12 @@ router.get('/', (req, res) => {
     res.json(reservas)
 })
 
+router.get('/usuario/:usuarioId/recientes', (req, res) => {
+    const { usuarioId } = req.params
+    const reservas = db.prepare(`SELECT * FROM reservas WHERE usuarioId = ? AND fecha >= date('now', '-2 days')`).all(usuarioId)
+    res.json(reservas)
+})
+
 router.get('/usuario/:usuarioId', (req, res) => {
     const { usuarioId } = req.params
     const reservasDelUsuario = db.prepare('SELECT * FROM reservas WHERE usuarioId = ?').all(usuarioId)
@@ -51,14 +57,17 @@ router.post('/', (req, res) => {
         return res.status(409).json({ error: 'El cargador ya está reservado en ese horario, revise la disponibilidad de los cargadores.' })
     }
 
-    const resultado = db.prepare('INSERT INTO reservas (cargadorId, hora, duracionMinutos, usuarioId) VALUES (?, ?, ?, ?)').run(cargadorId, hora, duracionMinutos, usuarioId)
+    const fechaHoy = new Date().toISOString().split('T')[0]
+
+    const resultado = db.prepare('INSERT INTO reservas (cargadorId, hora, fecha, duracionMinutos, usuarioId) VALUES (?, ?, ?, ?, ?)').run(cargadorId, hora, fechaHoy, duracionMinutos, usuarioId)
 
     const nuevaReserva = {
-    id: resultado.lastInsertRowid,
-    cargadorId,
-    hora,
-    duracionMinutos,
-    usuarioId,
+        id: resultado.lastInsertRowid,
+        cargadorId,
+        hora,
+        fecha: fechaHoy,
+        duracionMinutos,
+        usuarioId,
     }
 
     res.status(201).json({ mensaje: 'Reserva confirmada', reserva: nuevaReserva })
@@ -66,11 +75,16 @@ router.post('/', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     const { id } = req.params
+    const { usuarioId } = req.query
 
     const reserva = db.prepare('SELECT * FROM reservas WHERE id = ?').get(id)
 
     if (!reserva) {
         return res.status(404).json({ error: 'Reserva no encontrada' })
+    }
+
+    if (reserva.usuarioId !== parseInt(usuarioId)) {
+        return res.status(403).json({ error: 'No tiene permiso para eliminar esta reserva' })
     }
 
     db.prepare('DELETE FROM reservas WHERE id = ?').run(id)

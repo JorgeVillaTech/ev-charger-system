@@ -7,14 +7,25 @@ function Home() {
         return datosGuardados ? JSON.parse(datosGuardados) : null
     })
 
+// Mis reservas
+const dialogoMisReservasRef = useRef(null)
+const [misReservas, setMisReservas] = useState([])
+
+async function abrirDialogoMisReservas() {
+    const response = await fetch(`http://localhost:3001/reservas/usuario/${usuario?.id}/recientes`)
+    const datos = await response.json()
+    setMisReservas(datos)
+    dialogoMisReservasRef.current.showModal()
+}
+
 // Consultar cargadores disponibles
-const dialogDisponiblesRef = useRef(null)
+const dialogoDisponiblesRef = useRef(null)
 const [hora, setHora] = useState('06:00')
 const [minutos, setMinutos] = useState('30')
 const [cargadoresDisponibles, setCargadoresDisponibles] = useState([])
 
 function abrirDialogoDisponibles() {
-    dialogDisponiblesRef.current.showModal()
+    dialogoDisponiblesRef.current.showModal()
 }
 
 async function consultarDisponibilidad() {
@@ -55,7 +66,6 @@ async function reservarCargador() {
     const datos = await response.json()
     if (response.ok) {
         dialogReservaCargadorRef.current.close()
-        // Mostrar dialog con la información de la reserva y permitir cerrar
     } else {
         console.log(datos.error)
     }
@@ -86,7 +96,7 @@ async function eliminarReserva() {
         return
     }
 
-    const response = await fetch(`http://localhost:3001/reservas/${idReservaEliminar}`, {
+    const response = await fetch(`http://localhost:3001/reservas/${idReservaEliminar}?usuarioId=${usuario?.id}`, {
         method: 'DELETE',
     })
     const datos = await response.json()
@@ -97,18 +107,32 @@ async function eliminarReserva() {
     }
 }
 
+// Elemento JSX
 return (
     <div className="home-container">
         <h1>EV Charger</h1>
         <h2>Bienvenido(a), {usuario?.nombre}</h2>
 
         <div className="opciones-home">
+            <button onClick={abrirDialogoMisReservas}>Ver mis reservas</button>
             <button onClick={abrirDialogoDisponibles}>Ver cargadores disponibles</button>
             <button onClick={abrirDialogoHacerReserva}>Reservar cargador</button>
             <button onClick={abrirDialogoEliminarReserva}>Eliminar reserva</button>
         </div>
 
-    <dialog ref={dialogDisponiblesRef}>
+    <dialog ref={dialogoMisReservasRef}>
+        <p>Reservas realizadas en los últimos tres días</p>
+        <ul>
+            {misReservas.map(reserva => (
+                <li key={reserva.id}>Cargador reservado: {reserva.cargadorId} | Hora de la reserva: {reserva.hora} | Minutos de la reserva: {reserva.duracionMinutos} | Fecha de la reserva {reserva.fecha}</li>
+            ))}
+        </ul>
+
+        <button onClick={() => dialogoMisReservasRef.current.close()}>Cerrar</button>
+
+    </dialog>
+
+    <dialog ref={dialogoDisponiblesRef}>
         <h3>Consultar disponibilidad</h3>
 
         <label>Hora:</label>
@@ -133,7 +157,7 @@ return (
             ))}
         </ul>
 
-        <button onClick={() => dialogDisponiblesRef.current.close()}>Cerrar</button>
+        <button onClick={() => dialogoDisponiblesRef.current.close()}>Cerrar</button>
     </dialog>
 
 
@@ -166,6 +190,8 @@ return (
 
         <button onClick={reservarCargador}>Reservar Cargador</button>
 
+        <button onClick={() => dialogReservaCargadorRef.current.close()}>Cerrar</button>
+
     </dialog>
 
 
@@ -183,6 +209,8 @@ return (
         </select>
 
         <button onClick={eliminarReserva}>Eliminar Reserva</button>
+
+        <button onClick={() => dialogoEliminarReservaRef.current.close()}>Cerrar</button>
 
     </dialog>
     </div>
