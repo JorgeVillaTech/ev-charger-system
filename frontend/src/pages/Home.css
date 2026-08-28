@@ -25,3 +25,16 @@
     border-radius: 8px;
     cursor: pointer;
 }
+
+.reglasUso {
+    width: 65%;
+    background-color: #000000;
+    color: #f0f0f0;
+    border: solid 5px #f0f0f0;
+    border-radius: 15px;
+}
+
+.reglasUso li{
+    margin: 25px;
+    text-align: left;
+}

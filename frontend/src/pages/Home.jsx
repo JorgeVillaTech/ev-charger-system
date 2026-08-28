@@ -107,6 +107,15 @@ async function eliminarReserva() {
     }
 }
 
+
+// Reglas de uso del Home para ver cargadores disponible y ver, registrar y eliminar reservas, 
+const dialogoReglasUsoRef = useRef(null)
+
+async function abrirDialogoReglasUso(){
+    dialogoReglasUsoRef.current.showModal()
+}
+
+
 // Elemento JSX
 return (
     <div className="home-container">
@@ -118,6 +127,7 @@ return (
             <button onClick={abrirDialogoDisponibles}>Ver cargadores disponibles</button>
             <button onClick={abrirDialogoHacerReserva}>Reservar cargador</button>
             <button onClick={abrirDialogoEliminarReserva}>Eliminar reserva</button>
+            <button onClick={abrirDialogoReglasUso}>¿Cómo usar la aplicación de reservas?</button>
         </div>
 
     <dialog ref={dialogoMisReservasRef}>
@@ -195,7 +205,6 @@ return (
     </dialog>
 
 
-
     <dialog ref={dialogoEliminarReservaRef}>
         <div>
             <h3>Eliminar reserva</h3>
@@ -213,6 +222,24 @@ return (
         <button onClick={() => dialogoEliminarReservaRef.current.close()}>Cerrar</button>
 
     </dialog>
+
+    <dialog ref={dialogoReglasUsoRef} className="reglasUso">
+        <div>
+            <ul>
+                <li>Ver mis reservas: muestra las reservas realizadas por el usuario en el días actual y los dos días previos. Se muestra el id de la reserva, la hora que reservó, los minutos de la reserva y la fecha correspondiente.</li>
+
+                <li>Ver cargadores disponibles: permite consultar qué cargadores están libres en una hora y duración específicas. Se selecciona la hora deseada y la duración (entre 30 y 180 minutos), y se muestra el listado de cargadores sin conflicto de horario en ese rango.</li>
+
+                <li>Reservar cargador: permite crear una nueva reserva. Se elige el cargador, la hora de inicio y la duración (mínimo 30 minutos, máximo 180). No se permite reservar un cargador si su horario se traslapa con otra reserva ya existente para ese mismo cargador.</li>
+
+                <li>Eliminar reserva: permite cancelar una reserva activa propia. Solo se muestran y se pueden eliminar las reservas realizadas por el usuario que inició sesión; no es posible cancelar reservas de otros usuarios.</li>
+            </ul>
+
+            <button onClick={() => dialogoReglasUsoRef.current.close()}>Cerrar</button>
+
+        </div>
+    </dialog>
+
     </div>
     )
 }
