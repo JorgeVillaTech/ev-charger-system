@@ -6,10 +6,11 @@
     max-width: 400px;
     margin: 60px auto;
     padding: 35px;
-    border: 4px solid #ccc;
-    border-radius: 8px;
+    border: 5px solid var(--color-borde);
+    border-radius: 10px;
     font-family: sans-serif;
     text-align: center;
+    color: var(--color-texto);
 }
 
 .opciones-home {
@@ -37,4 +38,16 @@
 .reglasUso li{
     margin: 25px;
     text-align: left;
+}
+
+.redes-sociales {
+    display: flex;
+    gap: 35px;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 28px;
+}
+
+.redes-sociales a {
+    text-decoration: none;
 }

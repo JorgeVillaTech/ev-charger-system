@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import './Home.css'
 
 function Home() {
@@ -115,10 +115,33 @@ async function abrirDialogoReglasUso(){
     dialogoReglasUsoRef.current.showModal()
 }
 
+// Tema oscuro/claro
+const dialogConfiguracionRef = useRef(null)
+const [temaOscuro, setTemaOscuro] = useState(() => {
+    return localStorage.getItem('tema') === 'oscuro'
+})
+
+useEffect(() => {
+    document.documentElement.setAttribute('data-theme', temaOscuro ? 'oscuro' : 'claro')
+}, [])
+
+function abrirDialogoConfiguracion() {
+    dialogConfiguracionRef.current.showModal()
+}
+
+function alternarTema() {
+    const nuevoTema = !temaOscuro
+    setTemaOscuro(nuevoTema)
+    document.documentElement.setAttribute('data-theme', nuevoTema ? 'oscuro' : 'claro')
+    localStorage.setItem('tema', nuevoTema ? 'oscuro' : 'claro')
+}
+
 
 // Elemento JSX
 return (
+    
     <div className="home-container">
+        <button onClick={abrirDialogoConfiguracion}>Theme</button>
         <h1>EV Charger</h1>
         <h2>Bienvenido(a), {usuario?.nombre}</h2>
 
@@ -240,6 +263,22 @@ return (
         </div>
     </dialog>
 
+    <div className="redes-sociales">
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">📷</a>
+        <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer">🎵</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">🌐</a>
+    </div>
+
+    <dialog ref={dialogConfiguracionRef}>
+        <h3>Configuración</h3>
+
+        <label>
+            <input type="checkbox" checked={temaOscuro} onChange={alternarTema} />
+            Tema oscuro
+        </label>
+
+        <button onClick={() => dialogConfiguracionRef.current.close()}>Cerrar</button>
+    </dialog>
     </div>
     )
 }
