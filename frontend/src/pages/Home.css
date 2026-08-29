@@ -4,8 +4,9 @@
     align-items: center;
     gap: 16px;
     max-width: 400px;
-    margin: 60px auto;
-    padding: 35px;
+    margin: 20px auto;
+    padding: 25px;
+    padding-top: 15px;
     border: 5px solid var(--color-borde);
     border-radius: 10px;
     font-family: sans-serif;
@@ -27,6 +28,10 @@
     cursor: pointer;
 }
 
+.opciones-home button:hover {
+    background-color: #000000;
+}
+
 .reglasUso {
     width: 65%;
     background-color: #000000;
@@ -42,12 +47,46 @@
 
 .redes-sociales {
     display: flex;
-    gap: 35px;
+    gap: 40px;
     justify-content: center;
     margin-top: 20px;
-    font-size: 28px;
+    font-size: 18px;
 }
 
 .redes-sociales a {
     text-decoration: none;
+}
+
+.home-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.home-header h1 {
+    margin: 32px auto;
+}
+
+.boton-tema {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-bottom: 10px;
+    background: none;
+    border: 1px solid var(--color-borde);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.boton-tema:hover {
+    background-color: var(--color-borde);
 }

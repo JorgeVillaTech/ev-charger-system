@@ -40,6 +40,7 @@ const [idCargador, setIdCargador] = useState('A1')
 const [horaReserva, setHoraReserva] = useState('06:00')
 const [minutosReserva, setMinutosReserva] = useState('30')
 const [cargadores, setCargadores] = useState([])
+const [reservaConfirmada, setReservaConfirmada] = useState(null)
 
 async function abrirDialogoHacerReserva() {
     await cargarCargadores()
@@ -50,6 +51,13 @@ async function cargarCargadores() {
     const response = await fetch(`http://localhost:3001/cargadores`)
     const datos = await response.json()
     setCargadores(datos)
+}
+
+// Mostrar dialog con información al realizar una reserva
+const dialogReservaExitosaRef = useRef(null)
+async function abrirDialogReservaExitosa(){
+    dialogReservaCargadorRef.current.close()
+    dialogReservaExitosaRef.current.showModal()
 }
 
 async function reservarCargador() {
@@ -64,8 +72,10 @@ async function reservarCargador() {
         }),
     })
     const datos = await response.json()
+    console.log(response.status, datos)
     if (response.ok) {
-        dialogReservaCargadorRef.current.close()
+        setReservaConfirmada({...datos.reserva, nombreUsuario: usuario?.nombre})
+        abrirDialogReservaExitosa()
     } else {
         console.log(datos.error)
     }
@@ -108,6 +118,10 @@ async function eliminarReserva() {
 }
 
 
+// Mostrar dialog con información al eliminar una reserva
+
+
+
 // Reglas de uso del Home para ver cargadores disponible y ver, registrar y eliminar reservas, 
 const dialogoReglasUsoRef = useRef(null)
 
@@ -116,7 +130,6 @@ async function abrirDialogoReglasUso(){
 }
 
 // Tema oscuro/claro
-const dialogConfiguracionRef = useRef(null)
 const [temaOscuro, setTemaOscuro] = useState(() => {
     return localStorage.getItem('tema') === 'oscuro'
 })
@@ -124,10 +137,6 @@ const [temaOscuro, setTemaOscuro] = useState(() => {
 useEffect(() => {
     document.documentElement.setAttribute('data-theme', temaOscuro ? 'oscuro' : 'claro')
 }, [])
-
-function abrirDialogoConfiguracion() {
-    dialogConfiguracionRef.current.showModal()
-}
 
 function alternarTema() {
     const nuevoTema = !temaOscuro
@@ -141,7 +150,14 @@ function alternarTema() {
 return (
     
     <div className="home-container">
-        <button onClick={abrirDialogoConfiguracion}>Theme</button>
+
+        <div className="home-header">
+            
+            <button className="boton-tema" onClick={alternarTema}>
+                {temaOscuro ? '🌙' : '🔅'}
+            </button>
+        </div>
+
         <h1>EV Charger</h1>
         <h2>Bienvenido(a), {usuario?.nombre}</h2>
 
@@ -157,7 +173,7 @@ return (
         <p>Reservas realizadas en los últimos tres días</p>
         <ul>
             {misReservas.map(reserva => (
-                <li key={reserva.id}>Cargador reservado: {reserva.cargadorId} | Hora de la reserva: {reserva.hora} | Minutos de la reserva: {reserva.duracionMinutos} | Fecha de la reserva {reserva.fecha}</li>
+                <li key={reserva.id}>Cargador reservado: {reserva.cargadorId} | Hora de la reserva: {reserva.hora} | Minutos de la reserva: {reserva.duracionMinutosNumero} | Fecha de la reserva {reserva.fecha}</li>
             ))}
         </ul>
 
@@ -249,7 +265,7 @@ return (
     <dialog ref={dialogoReglasUsoRef} className="reglasUso">
         <div>
             <ul>
-                <li>Ver mis reservas: muestra las reservas realizadas por el usuario en el días actual y los dos días previos. Se muestra el id de la reserva, la hora que reservó, los minutos de la reserva y la fecha correspondiente.</li>
+                <li>Ver mis reservas: muestra las reservas realizadas por el usuario en el día actual y los dos días previos. Se muestra el id de la reserva, la hora que reservó, los minutos de la reserva y la fecha correspondiente.</li>
 
                 <li>Ver cargadores disponibles: permite consultar qué cargadores están libres en una hora y duración específicas. Se selecciona la hora deseada y la duración (entre 30 y 180 minutos), y se muestra el listado de cargadores sin conflicto de horario en ese rango.</li>
 
@@ -269,17 +285,22 @@ return (
         <a href="#" target="_blank" rel="noopener noreferrer">🌐</a>
     </div>
 
-    <dialog ref={dialogConfiguracionRef}>
-        <h3>Configuración</h3>
+<dialog ref={dialogReservaExitosaRef}>
+    <div>
+        <h3>Reserva confirmada</h3>
+        <p>ID reserva: {reservaConfirmada?.id}</p>
+        <p>ID usuario: {reservaConfirmada?.usuarioId}</p>
+        <p>Nombre usuario: {reservaConfirmada?.nombreUsuario}</p>
+        <p>Fecha: {reservaConfirmada?.fecha}</p>
+        <p>Cargador reservado: {reservaConfirmada?.cargadorId}</p>
+        <p>Hora de la reserva: {reservaConfirmada?.hora}</p>
+        <p>Minutos de la reserva: {reservaConfirmada?.duracionMinutosNumero}</p>
 
-        <label>
-            <input type="checkbox" checked={temaOscuro} onChange={alternarTema} />
-            Tema oscuro
-        </label>
-
-        <button onClick={() => dialogConfiguracionRef.current.close()}>Cerrar</button>
-    </dialog>
+        <button onClick={() => dialogReservaExitosaRef.current.close()}>Cerrar</button>
     </div>
+</dialog>
+
+    </div>    
     )
 }
 

@@ -11,7 +11,7 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --color-fondo: #7D8A4E;
+  --color-fondo: #8B9C52;
   --color-texto: #000000;
   --color-borde: #f0f0f0;
   --color-titulo: #000000;
@@ -45,7 +45,10 @@
   --color-titulo: #f0f0f0;
 }
 
-
+[data-theme="oscuro"] .boton-tema {
+  background-color: rgba(255, 221, 87, 0.15);
+  border-color: #ffdd57;
+}
 
 body {
   margin: 0;

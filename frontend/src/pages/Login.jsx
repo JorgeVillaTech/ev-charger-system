@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
@@ -32,8 +32,30 @@ function Login() {
         }
     }
 
+    // Tema oscuro-claro
+    const [temaOscuro, setTemaOscuro] = useState(() => {
+        return localStorage.getItem('tema') === 'oscuro'
+    })
+    
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', temaOscuro ? 'oscuro' : 'claro')
+    }, [])
+    
+    function alternarTema() {
+        const nuevoTema = !temaOscuro
+        setTemaOscuro(nuevoTema)
+        document.documentElement.setAttribute('data-theme', nuevoTema ? 'oscuro' : 'claro')
+        localStorage.setItem('tema', nuevoTema ? 'oscuro' : 'claro')
+    }
+
     return (
+
         <div className="login-container">
+
+            <button className="boton-cambioTema" onClick={alternarTema}>
+                {temaOscuro ? '🌙' : '🔅'}
+            </button>
+
         <h1>EV Charger</h1>
         <h2>Iniciar sesión</h2>
 

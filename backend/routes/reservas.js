@@ -1,6 +1,6 @@
 import express from 'express'
 import db from '../db.js'
-import { calcularRangoReserva } from '../utils.js'
+import { calcularRangoReserva, horaAMinutos } from '../utils.js'
 
 const router = express.Router()
 
@@ -23,12 +23,26 @@ router.get('/usuario/:usuarioId', (req, res) => {
 
 router.post('/', (req, res) => {
     const { cargadorId, hora, duracionMinutos, usuarioId } = req.body
-
+    
     if (!cargadorId || !hora || !duracionMinutos || !usuarioId) {
         return res.status(400).json({ error: 'Faltan datos: cargadorId, hora, duracionMinutos y el ID del usuario son obligatorios' })
     }
 
-    if (duracionMinutos < 30 || duracionMinutos > 180) {
+    const duracionMinutosNumero = parseInt(duracionMinutos)
+    
+    const horaLimiteApertura = horaAMinutos('06:00');
+    const horaLimiteCierre = horaAMinutos('22:30');
+    const rangoHoraNuevaReserva = calcularRangoReserva(hora, duracionMinutosNumero)
+
+    if (rangoHoraNuevaReserva.inicio < horaLimiteApertura){
+        return res.status(400).json({error: 'No se pueden hacer reservas antes de las 6:00 am.'})
+    }
+
+    if (rangoHoraNuevaReserva.fin > horaLimiteCierre){
+        return res.status(400).json({error: 'No se puede hacer reservas que pasen de las 10:30 pm'})
+    }
+
+    if (duracionMinutosNumero < 30 || duracionMinutosNumero > 180) {
         return res.status(400).json({ error: 'La duración debe estar entre 30 y 180 minutos' })
     }
 
@@ -38,18 +52,22 @@ router.post('/', (req, res) => {
         return res.status(400).json({error : 'Usuario no encontrado'})
     }
 
+    const maximoDeReservas = db.prepare(`SELECT COUNT(*) AS total FROM reservas WHERE usuarioId = ? AND fecha = date('now')`).get(usuarioId)
+
+    if (maximoDeReservas.total >= 2){
+        return res.status(403).json ({error: 'No puede realizar más de dos reservaciones al día', maximoDeReservas})
+    }
+
     const cargador = db.prepare('SELECT * FROM cargadores WHERE id = ?').get(cargadorId)
 
     if (!cargador) {
         return res.status(400).json({ error: 'El cargador solicitado no existe.' })
     }
-
-    const rangoHoraNuevaReserva = calcularRangoReserva(hora, duracionMinutos)
-
+    
     const reservasMismoCargador = db.prepare('SELECT * FROM reservas WHERE cargadorId = ?').all(cargadorId)
 
     const haySobreposicion = reservasMismoCargador.some(reserva => {
-        const rangoReservaExistente = calcularRangoReserva(reserva.hora, reserva.duracionMinutos)
+        const rangoReservaExistente = calcularRangoReserva(reserva.hora, reserva.duracionMinutosNumero)
         return rangoReservaExistente.inicio < rangoHoraNuevaReserva.fin && rangoHoraNuevaReserva.inicio < rangoReservaExistente.fin
     })
 
@@ -66,7 +84,7 @@ router.post('/', (req, res) => {
         cargadorId,
         hora,
         fecha: fechaHoy,
-        duracionMinutos,
+        duracionMinutosNumero,
         usuarioId,
     }
 

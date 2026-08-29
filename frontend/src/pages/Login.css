@@ -9,6 +9,7 @@
     border: 4px solid #ccc;
     border-radius: 8px;
     font-family: sans-serif;
+    position: relative;
 }
 
 .login-container h1 {
@@ -21,10 +22,39 @@
     box-sizing: border-box;
 }
 
-.login-container button {
+.login-container button:not(.boton-cambioTema) {
     width: 100%;
     padding: 8px;
     border: 1px solid #f0f0f0;
     border-radius: 8px;
     cursor: pointer;
+}
+
+.login-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    align-self: stretch;
+    width: 100%;
+}
+
+.boton-cambioTema {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: 1px solid var(--color-borde);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.boton-cambioTema:hover {
+    background-color: var(--color-borde);
 }
