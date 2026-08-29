@@ -72,7 +72,6 @@ async function reservarCargador() {
         }),
     })
     const datos = await response.json()
-    console.log(response.status, datos)
     if (response.ok) {
         setReservaConfirmada({...datos.reserva, nombreUsuario: usuario?.nombre})
         abrirDialogReservaExitosa()
@@ -85,6 +84,7 @@ async function reservarCargador() {
 const dialogoEliminarReservaRef = useRef(null)
 const [reservasUsuario, setReservasUsuario] = useState([])
 const [idReservaEliminar, setIdReservaEliminar] = useState('')
+const [reservaEliminada, setReservaEliminada] = useState(null)
 
 async function abrirDialogoEliminarReserva() {
     await extraerReservasUsuario()
@@ -100,26 +100,32 @@ async function extraerReservasUsuario() {
     }
 }
 
+const dialogoReservaEliminada = useRef(null)
+async function abrirDialogoReservaEliminada(){
+    dialogoEliminarReservaRef.current.close()
+    dialogoReservaEliminada.current.showModal()
+}
+
 async function eliminarReserva() {
     if (!idReservaEliminar) {
         console.log('No hay ninguna reserva seleccionada para eliminar')
         return
     }
 
+    const reservaABorrar = reservasUsuario.find(reserva => reserva.id === idReservaEliminar || reserva.id === parseInt(idReservaEliminar))
+
+
     const response = await fetch(`http://localhost:3001/reservas/${idReservaEliminar}?usuarioId=${usuario?.id}`, {
         method: 'DELETE',
     })
     const datos = await response.json()
     if (response.ok) {
-        dialogoEliminarReservaRef.current.close()
+        setReservaEliminada(reservaABorrar)
+        abrirDialogoReservaEliminada()
     } else {
         console.log(datos.error)
     }
 }
-
-
-// Mostrar dialog con información al eliminar una reserva
-
 
 
 // Reglas de uso del Home para ver cargadores disponible y ver, registrar y eliminar reservas, 
@@ -297,6 +303,20 @@ return (
         <p>Minutos de la reserva: {reservaConfirmada?.duracionMinutosNumero}</p>
 
         <button onClick={() => dialogReservaExitosaRef.current.close()}>Cerrar</button>
+    </div>
+</dialog>
+
+
+<dialog ref={dialogoReservaEliminada}>
+    <div>
+        <h3>Reserva eliminada</h3>
+        <p>ID reserva: {reservaEliminada?.id}</p>
+        <p>Fecha: {reservaEliminada?.fecha}</p>
+        <p>Cargador reservado: {reservaEliminada?.cargadorId}</p>
+        <p>Hora de la reserva: {reservaEliminada?.hora}</p>
+        <p>Minutos de la reserva: {reservaEliminada?.duracionMinutosNumero}</p>
+
+        <button onClick={() => dialogoReservaEliminada.current.close()}>Cerrar</button>
     </div>
 </dialog>
 

@@ -1,7 +1,7 @@
 :root {
   --text: #6b6375;
   --text-h: #08060d;
-  --bg: #fff;
+  --bg: #000000;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
@@ -11,9 +11,9 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --color-fondo: #8B9C52;
+  --color-fondo: #BABABA;
   --color-texto: #000000;
-  --color-borde: #f0f0f0;
+  --color-borde: #000000;
   --color-titulo: #000000;
 
 
@@ -41,12 +41,12 @@
   [data-theme="oscuro"] {
   --color-fondo: #1a1a1a;
   --color-texto: #f0f0f0;
-  --color-borde: #444444;
+  --color-borde: #f0f0f0;
   --color-titulo: #f0f0f0;
 }
 
 [data-theme="oscuro"] .boton-tema {
-  background-color: rgba(255, 221, 87, 0.15);
+  background-color: #595757;
   border-color: #ffdd57;
 }
 
