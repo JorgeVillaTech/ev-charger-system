@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState} from 'react'
+import useTema from '../hooks/useTema'
 import { Link } from 'react-router-dom'
 import './Register.css'
 import { useNavigate } from 'react-router-dom'
@@ -48,8 +49,15 @@ function Register() {
     }
 }
 
+    const {temaOscuro, alternarTema} = useTema()
+
     return (
         <div className="register-container">
+
+        <button className="boton-cambioTema" onClick={alternarTema}>
+            {temaOscuro ? '🌙' : '🔅'}
+        </button>
+
         <h1>EV Charger</h1>
         <h2>Registro de usuario</h2>
 

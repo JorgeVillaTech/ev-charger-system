@@ -1,11 +1,15 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
+import useTema from '../hooks/useTema'
 import './Home.css'
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
     const [usuario] = useState(() => {
         const datosGuardados = localStorage.getItem('usuario')
         return datosGuardados ? JSON.parse(datosGuardados) : null
     })
+
+const navigate = useNavigate()
 
 // Mis reservas
 const dialogoMisReservasRef = useRef(null)
@@ -41,6 +45,7 @@ const [horaReserva, setHoraReserva] = useState('06:00')
 const [minutosReserva, setMinutosReserva] = useState('30')
 const [cargadores, setCargadores] = useState([])
 const [reservaConfirmada, setReservaConfirmada] = useState(null)
+const [errorReserva, setErrorReserva] = useState('')
 
 async function abrirDialogoHacerReserva() {
     await cargarCargadores()
@@ -76,7 +81,7 @@ async function reservarCargador() {
         setReservaConfirmada({...datos.reserva, nombreUsuario: usuario?.nombre})
         abrirDialogReservaExitosa()
     } else {
-        console.log(datos.error)
+        setErrorReserva(datos.error)
     }
 }
 
@@ -85,6 +90,7 @@ const dialogoEliminarReservaRef = useRef(null)
 const [reservasUsuario, setReservasUsuario] = useState([])
 const [idReservaEliminar, setIdReservaEliminar] = useState('')
 const [reservaEliminada, setReservaEliminada] = useState(null)
+const [errorEliminar, setErrorEliminar] = useState('')
 
 async function abrirDialogoEliminarReserva() {
     await extraerReservasUsuario()
@@ -114,7 +120,6 @@ async function eliminarReserva() {
 
     const reservaABorrar = reservasUsuario.find(reserva => reserva.id === idReservaEliminar || reserva.id === parseInt(idReservaEliminar))
 
-
     const response = await fetch(`http://localhost:3001/reservas/${idReservaEliminar}?usuarioId=${usuario?.id}`, {
         method: 'DELETE',
     })
@@ -123,10 +128,9 @@ async function eliminarReserva() {
         setReservaEliminada(reservaABorrar)
         abrirDialogoReservaEliminada()
     } else {
-        console.log(datos.error)
+        setErrorEliminar(datos.error)
     }
 }
-
 
 // Reglas de uso del Home para ver cargadores disponible y ver, registrar y eliminar reservas, 
 const dialogoReglasUsoRef = useRef(null)
@@ -135,21 +139,19 @@ async function abrirDialogoReglasUso(){
     dialogoReglasUsoRef.current.showModal()
 }
 
-// Tema oscuro/claro
-const [temaOscuro, setTemaOscuro] = useState(() => {
-    return localStorage.getItem('tema') === 'oscuro'
-})
-
-useEffect(() => {
-    document.documentElement.setAttribute('data-theme', temaOscuro ? 'oscuro' : 'claro')
-}, [])
-
-function alternarTema() {
-    const nuevoTema = !temaOscuro
-    setTemaOscuro(nuevoTema)
-    document.documentElement.setAttribute('data-theme', nuevoTema ? 'oscuro' : 'claro')
-    localStorage.setItem('tema', nuevoTema ? 'oscuro' : 'claro')
+// Volver al login
+const dialogConfirmacionCierreSesion = useRef(null)
+async function abrirDialogConfirmacionCierreSesion(){
+    dialogConfirmacionCierreSesion.current.showModal()
 }
+
+async function cerrarSesion(){
+    localStorage.removeItem('usuario')
+    navigate('/login')
+}
+
+// Tema oscuro/claro
+const {temaOscuro, alternarTema} = useTema()
 
 
 // Elemento JSX
@@ -173,6 +175,7 @@ return (
             <button onClick={abrirDialogoHacerReserva}>Reservar cargador</button>
             <button onClick={abrirDialogoEliminarReserva}>Eliminar reserva</button>
             <button onClick={abrirDialogoReglasUso}>¿Cómo usar la aplicación de reservas?</button>
+            <button onClick={abrirDialogConfirmacionCierreSesion}>Cerrar Sesión</button>
         </div>
 
     <dialog ref={dialogoMisReservasRef}>
@@ -244,6 +247,7 @@ return (
         </select>
 
         <button onClick={reservarCargador}>Reservar Cargador</button>
+        {errorReserva && <p>{errorReserva}</p>}
 
         <button onClick={() => dialogReservaCargadorRef.current.close()}>Cerrar</button>
 
@@ -263,7 +267,7 @@ return (
         </select>
 
         <button onClick={eliminarReserva}>Eliminar Reserva</button>
-
+        {errorEliminar && <p>{errorEliminar}</p>}
         <button onClick={() => dialogoEliminarReservaRef.current.close()}>Cerrar</button>
 
     </dialog>
@@ -319,6 +323,16 @@ return (
         <button onClick={() => dialogoReservaEliminada.current.close()}>Cerrar</button>
     </div>
 </dialog>
+
+<dialog ref={dialogConfirmacionCierreSesion}>
+
+    <h4>¿Desea cerrar su sesión actual?</h4>
+
+    <button onClick={cerrarSesion}>Sí</button>
+    <button onClick={() => dialogConfirmacionCierreSesion.current.close()}>No</button>
+
+</dialog>
+
 
     </div>    
     )

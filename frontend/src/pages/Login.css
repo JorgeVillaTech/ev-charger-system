@@ -20,12 +20,15 @@
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
+    border-radius:7px;
+    border: none;
+    margin: 0px auto 10px;
 }
 
 .login-container button:not(.boton-cambioTema) {
-    width: 100%;
+    width: 50%;
     padding: 8px;
-    border: 1px solid #f0f0f0;
+    border: 2px solid #f0f0f0;
     border-radius: 8px;
     cursor: pointer;
 }
@@ -42,7 +45,7 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    background-color: RGB(255,234,200);
+    background: RGB(255, 255, 255);
     border: 2px solid var(--color-borde);
     border-radius: 50%;
     width: 30px;
@@ -56,5 +59,14 @@
 }
 
 .boton-cambioTema:hover {
-    background-color: var(--color-borde);
+    background-color: rgba(0,0,0);
+}
+
+a {
+    color: rgba(10,10,255);
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
 }

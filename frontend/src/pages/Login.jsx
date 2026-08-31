@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import useTema from '../hooks/useTema'
+import {useState} from 'react'
 import { Link } from 'react-router-dom'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
@@ -33,20 +34,7 @@ function Login() {
     }
 
     // Tema oscuro-claro
-    const [temaOscuro, setTemaOscuro] = useState(() => {
-        return localStorage.getItem('tema') === 'oscuro'
-    })
-    
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', temaOscuro ? 'oscuro' : 'claro')
-    }, [])
-    
-    function alternarTema() {
-        const nuevoTema = !temaOscuro
-        setTemaOscuro(nuevoTema)
-        document.documentElement.setAttribute('data-theme', nuevoTema ? 'oscuro' : 'claro')
-        localStorage.setItem('tema', nuevoTema ? 'oscuro' : 'claro')
-    }
+    const { temaOscuro, alternarTema } = useTema()
 
     return (
 
@@ -76,8 +64,8 @@ function Login() {
             <button type="submit">Ingresar</button>
         </form>
 
-        <Link to="/olvide-password">¿Olvidó su contraseña?</Link>
-        <button>Soporte / Ayuda</button>
+        <p>¿Olvidó su contraseña?</p>
+        <Link to="/olvide-password">Restablecer contraseña</Link>
 
         <p>¿No tiene una cuenta? </p>
         <Link to="/registro">Regístrese aquí</Link>
