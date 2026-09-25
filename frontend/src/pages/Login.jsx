@@ -3,6 +3,7 @@ import {useState} from 'react'
 import { Link } from 'react-router-dom'
 import './Login.css'
 import { useNavigate } from 'react-router-dom'
+import { API_URL } from '../config'
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -13,7 +14,7 @@ function Login() {
     async function handleSubmit(event) {
         event.preventDefault()
 
-        const response = await fetch('http://localhost:3001/usuarios/login', {
+        const response = await fetch(`${API_URL}/usuarios/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,9 +64,6 @@ function Login() {
             {errorLogin && <p>{errorLogin}</p>}
             <button type="submit">Ingresar</button>
         </form>
-
-        <p>¿Olvidó su contraseña?</p>
-        <Link to="/olvide-password">Restablecer contraseña</Link>
 
         <p>¿No tiene una cuenta? </p>
         <Link to="/registro">Regístrese aquí</Link>

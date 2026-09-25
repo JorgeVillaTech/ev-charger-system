@@ -2,6 +2,8 @@ import { useState, useRef } from 'react'
 import useTema from '../hooks/useTema'
 import './Home.css'
 import { useNavigate } from 'react-router-dom'
+import { API_URL } from '../config'  
+
 
 function Home() {
     const [usuario] = useState(() => {
@@ -16,7 +18,7 @@ const dialogoMisReservasRef = useRef(null)
 const [misReservas, setMisReservas] = useState([])
 
 async function abrirDialogoMisReservas() {
-    const response = await fetch(`http://localhost:3001/reservas/usuario/${usuario?.id}/recientes`)
+    const response = await fetch(`${API_URL}/reservas/usuario/${usuario?.id}/recientes`)
     const datos = await response.json()
     setMisReservas(datos)
     dialogoMisReservasRef.current.showModal()
@@ -33,7 +35,7 @@ function abrirDialogoDisponibles() {
 }
 
 async function consultarDisponibilidad() {
-    const response = await fetch(`http://localhost:3001/cargadores/disponibles?horaReserva=${hora}&minutosReserva=${minutos}`)
+    const response = await fetch(`${API_URL}/cargadores/disponibles?horaReserva=${hora}&minutosReserva=${minutos}`)
     const datos = await response.json()
     setCargadoresDisponibles(datos.cargadores)
 }
@@ -53,7 +55,7 @@ async function abrirDialogoHacerReserva() {
 }
 
 async function cargarCargadores() {
-    const response = await fetch(`http://localhost:3001/cargadores`)
+    const response = await fetch(`${API_URL}/cargadores`)
     const datos = await response.json()
     setCargadores(datos)
 }
@@ -66,7 +68,7 @@ async function abrirDialogReservaExitosa(){
 }
 
 async function reservarCargador() {
-    const response = await fetch('http://localhost:3001/reservas', {
+    const response = await fetch(`${API_URL}/reservas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -98,7 +100,7 @@ async function abrirDialogoEliminarReserva() {
 }
 // Función para desplegar sólo las reservas asociadas al usuario
 async function extraerReservasUsuario() {
-    const response = await fetch(`http://localhost:3001/reservas/usuario/${usuario?.id}`)
+    const response = await fetch(`${API_URL}/reservas/usuario/${usuario?.id}`)
     const datos = await response.json()
     setReservasUsuario(datos)
     if (datos.length > 0) {
@@ -120,7 +122,7 @@ async function eliminarReserva() {
 
     const reservaABorrar = reservasUsuario.find(reserva => reserva.id === idReservaEliminar || reserva.id === parseInt(idReservaEliminar))
 
-    const response = await fetch(`http://localhost:3001/reservas/${idReservaEliminar}?usuarioId=${usuario?.id}`, {
+    const response = await fetch(`${API_URL}/reservas/${idReservaEliminar}?usuarioId=${usuario?.id}`, {
         method: 'DELETE',
     })
     const datos = await response.json()

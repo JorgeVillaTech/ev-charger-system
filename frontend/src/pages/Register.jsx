@@ -3,6 +3,7 @@ import useTema from '../hooks/useTema'
 import { Link } from 'react-router-dom'
 import './Register.css'
 import { useNavigate } from 'react-router-dom'
+import {API_URL} from '../config'
 
 function Register() {
     const [email, setUsuario] = useState('')
@@ -25,7 +26,7 @@ function Register() {
         return
     }
 
-    const response = await fetch('http://localhost:3001/usuarios/registro', {
+    const response = await fetch(`${API_URL}/usuarios/registro`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
